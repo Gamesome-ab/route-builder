@@ -1,11 +1,11 @@
 import {
-  PathGenerator,
-  PathLiteral,
-  ResolvedRoutes,
-  RouteMap,
-  ValidatePath,
-  ValidRouteMap,
-  YOLO,
+	PathGenerator,
+	PathLiteral,
+	ResolvedRoutes,
+	RouteMap,
+	ValidatePath,
+	ValidRouteMap,
+	YOLO,
 } from './types';
 
 /**
@@ -40,51 +40,51 @@ import {
  * const aboutUrl = routesWithPrefix.about; // returns "http://example.com/about", type hint is "/about"
  */
 export const buildRoutes: typeof _buildRoutes = (r, prefix) => {
-  return _buildRoutes(r, prefix);
+	return _buildRoutes(r, prefix);
 };
 
 function _buildRoutes<
-  const T extends RouteMap | PathLiteral,
-  Prefix extends string = '',
-  // >(r: ValidRouteMap<T>, prefix = '') {
+	const T extends RouteMap | PathLiteral,
+	Prefix extends string = '',
+	// >(r: ValidRouteMap<T>, prefix = '') {
 >(
-  r: T extends string ? ValidatePath<T> : ValidRouteMap<T>,
-  prefix = '',
-  first = true
+	r: T extends string ? ValidatePath<T> : ValidRouteMap<T>,
+	prefix = '',
+	first = true
 ) {
-  if (typeof r === 'string') {
-    return `${prefix}${r}` as ResolvedRoutes<T, Prefix>;
-  }
-  if (typeof r === 'function') {
-    const f = r as PathGenerator;
-    return ((...args: YOLO[]) =>
-      buildRoutes(f(...args), prefix, false)) as unknown as ResolvedRoutes<
-      T,
-      Prefix
-    >;
-  }
-  if (typeof r === 'object') {
-    const newObj = {} as YOLO;
-    let currentPrefix = prefix;
+	if (typeof r === 'string') {
+		return `${prefix}${r}` as ResolvedRoutes<T, Prefix>;
+	}
+	if (typeof r === 'function') {
+		const f = r as PathGenerator;
+		return ((...args: YOLO[]) =>
+			buildRoutes(f(...args), prefix, false)) as unknown as ResolvedRoutes<
+			T,
+			Prefix
+		>;
+	}
+	if (typeof r === 'object') {
+		const newObj = {} as YOLO;
+		let currentPrefix = prefix;
 
-    // Make sure we always handle $ before going through the keys
-    if ('$' in r && typeof r['$'] === 'string') {
-      currentPrefix += r['$'];
-    }
+		// Make sure we always handle $ before going through the keys
+		if ('$' in r && typeof r['$'] === 'string') {
+			currentPrefix += r['$'];
+		}
 
-    for (const key in r) {
-      if (key === '$' && typeof r['$'] === 'string') {
-        newObj['$'] = currentPrefix;
-      } else {
-        if (first && currentPrefix === '/') {
-          // Prevent double-slash at beginning when first $ is '/'
-          newObj[key] = buildRoutes(r[key] as RouteMap, '', false);
-        } else {
-          newObj[key] = buildRoutes(r[key] as RouteMap, currentPrefix, false);
-        }
-      }
-    }
-    return newObj as ResolvedRoutes<T, Prefix>;
-  }
-  return r as unknown as ResolvedRoutes<T, Prefix>;
+		for (const key in r) {
+			if (key === '$' && typeof r['$'] === 'string') {
+				newObj['$'] = currentPrefix;
+			} else {
+				if (first && currentPrefix === '/') {
+					// Prevent double-slash at beginning when first $ is '/'
+					newObj[key] = buildRoutes(r[key] as RouteMap, '', false);
+				} else {
+					newObj[key] = buildRoutes(r[key] as RouteMap, currentPrefix, false);
+				}
+			}
+		}
+		return newObj as ResolvedRoutes<T, Prefix>;
+	}
+	return r as unknown as ResolvedRoutes<T, Prefix>;
 }
