@@ -25,8 +25,13 @@ routes.user.id('123'); // "/users/123"
 
 In your IDE you will see autocompletion for both static and dynamic routes. as well as hints indicating what will be generated:
 
-![routes typehint](./packages/route-builder/docs/obj-typehint.png)
-![dynamic route typehint](./packages/route-builder/docs/prop-typehint.png)
+<picture>
+  <img src="./packages/route-builder/docs/obj-typehint.png" alt="routes typehint" width="50%" />
+</picture>
+
+<picture>
+  <img src="./packages/route-builder/docs/prop-typehint.png" alt="dynamic route typehint" width="50%" />
+</picture>
 
 ## Installation
 
