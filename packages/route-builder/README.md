@@ -1,11 +1,27 @@
-# route-builder
+## @gamesome/route-builder
 
-This library was generated with [Nx](https://nx.dev).
+Let's you build your application's routes in a type-safe way with support for dynamic segments like so:
 
-## Building
+```typescript
+import { buildRoutes } from '@gamesome/route-builder';
 
-Run `nx build route-builder` to build the library.
+const routes = buildRoutes({
+	$: '/',
+	user: {
+		$: '/users',
+		id: (userId: string) => `/${userId}`,
+	},
+});
 
-## Running unit tests
+// Static route
+routes.$; // "/"
+routes.user.$; // "/users"
 
-Run `nx test route-builder` to execute the unit tests via [Vitest](https://vitest.dev/).
+// Dynamic route
+routes.user.id('123'); // "/users/123"
+```
+
+In your IDE you will see autocompletion for both static and dynamic routes. as well as hints indicating what will be generated:
+
+![routes typehint](./docs/obj-typehint.png)
+![dynamic route typehint](./docs/prop-typehint.png)

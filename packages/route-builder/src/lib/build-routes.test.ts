@@ -84,14 +84,14 @@ describe('buildRoutes (simple object)', () => {
           },
         },
       },
-      prefix
+      prefix,
     );
     expect(result.$).toBe('http://some-prefix.com/');
     expect(result.non$).toBe('http://some-prefix.com/non-$');
     expect(result.branch1.$).toBe('http://some-prefix.com/branch-1');
     expect(result.branch2.$).toBe('http://some-prefix.com/branch-2');
     expect(result.branch2.branch21.$).toBe(
-      'http://some-prefix.com/branch-2/branch-2-1'
+      'http://some-prefix.com/branch-2/branch-2-1',
     );
 
     type _$ = Expect<Equal<typeof result.$, '/'>>;
@@ -169,12 +169,12 @@ describe('buildRoutes (functions)', () => {
     type ItemId = string & { __brand: 'ItemId' };
 
     const result = buildRoutes({
-      id: ({ id, scope }: { id: string; scope: string }) =>
-        `/item/${id as ItemId}/${scope}`,
+      id: (params: { id: string; scope: string }) =>
+        `/item/${params.id as ItemId}/${params.scope}`,
     });
 
     expect(result.id({ id: '123', scope: 'some-scope' })).toBe(
-      '/item/123/some-scope'
+      '/item/123/some-scope',
     );
 
     type _Id = Expect<
@@ -183,10 +183,12 @@ describe('buildRoutes (functions)', () => {
   });
 
   it('should build routes with nested functions', () => {
+    type ItemId = string & { __brand: 'ItemId' };
+
     const result = buildRoutes({
       id: (id: string) => `/id/${id}`,
       nested: {
-        item: (itemId: string) => `/nested/${itemId}`,
+        item: (itemId: string) => `/nested/${itemId as ItemId}`,
       },
     });
 
@@ -195,17 +197,19 @@ describe('buildRoutes (functions)', () => {
 
     type _Id = Expect<Equal<ReturnType<typeof result.id>, `/id/${string}`>>;
     type _NestedItem = Expect<
-      Equal<ReturnType<typeof result.nested.item>, `/nested/${string}`>
+      Equal<ReturnType<typeof result.nested.item>, `/nested/${ItemId}`>
     >;
   });
 
   it('should build routes with $ and nested functions', () => {
+    type ItemId = string & { __brand: 'ItemId' };
+
     const result = buildRoutes({
       $: '/base',
       id: (id: string) => `/${id}`,
       nested: {
         $: '/nested',
-        item: (itemId: string) => `/${itemId}`,
+        item: (itemId: string) => `/${itemId as ItemId}`,
       },
     });
 
@@ -218,7 +222,7 @@ describe('buildRoutes (functions)', () => {
     type _Id = Expect<Equal<ReturnType<typeof result.id>, `/base/${string}`>>;
     type _NestedRoot = Expect<Equal<typeof result.nested.$, '/base/nested'>>;
     type _NestedItem = Expect<
-      Equal<ReturnType<typeof result.nested.item>, `/base/nested/${string}`>
+      Equal<ReturnType<typeof result.nested.item>, `/base/nested/${ItemId}`>
     >;
   });
 
@@ -293,7 +297,7 @@ describe('buildRoutes (deeply nested)', () => {
     >;
 
     expect(result.branch2.branch21.branch211.$).toBe(
-      '/base/branch-2/branch-2-1/branch-2-1-1'
+      '/base/branch-2/branch-2-1/branch-2-1-1',
     );
     type _SubItemThreeRoot = Expect<
       Equal<
@@ -303,7 +307,7 @@ describe('buildRoutes (deeply nested)', () => {
     >;
 
     expect(result.branch2.branch21.branch211.branch2111.$).toBe(
-      '/base/branch-2/branch-2-1/branch-2-1-1/branch-2-1-1-1'
+      '/base/branch-2/branch-2-1/branch-2-1-1/branch-2-1-1-1',
     );
     type _SubItemFourRoot = Expect<
       Equal<
@@ -313,7 +317,7 @@ describe('buildRoutes (deeply nested)', () => {
     >;
 
     expect(result.branch2.branch21.branch211.branch2111.branch21111.$).toBe(
-      '/base/branch-2/branch-2-1/branch-2-1-1/branch-2-1-1-1/branch-2-1-1-1-1'
+      '/base/branch-2/branch-2-1/branch-2-1-1/branch-2-1-1-1/branch-2-1-1-1-1',
     );
     type _SubItemFiveRoot = Expect<
       Equal<
@@ -323,9 +327,9 @@ describe('buildRoutes (deeply nested)', () => {
     >;
 
     expect(
-      result.branch2.branch21.branch211.branch2111.branch21111.id('123')
+      result.branch2.branch21.branch211.branch2111.branch21111.id('123'),
     ).toBe(
-      '/base/branch-2/branch-2-1/branch-2-1-1/branch-2-1-1-1/branch-2-1-1-1-1/123'
+      '/base/branch-2/branch-2-1/branch-2-1-1/branch-2-1-1-1/branch-2-1-1-1-1/123',
     );
     type _SubItemFiveId = Expect<
       Equal<
@@ -337,9 +341,9 @@ describe('buildRoutes (deeply nested)', () => {
     >;
 
     expect(
-      result.branch2.branch21.branch211.branch2111.branch21111.filter('filter')
+      result.branch2.branch21.branch211.branch2111.branch21111.filter('filter'),
     ).toBe(
-      '/base/branch-2/branch-2-1/branch-2-1-1/branch-2-1-1-1/branch-2-1-1-1-1?some-filter=filter'
+      '/base/branch-2/branch-2-1/branch-2-1-1/branch-2-1-1-1/branch-2-1-1-1-1?some-filter=filter',
     );
     type _SubItemFiveFilter = Expect<
       Equal<
