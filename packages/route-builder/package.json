@@ -39,23 +39,23 @@
   },
   "dependencies": {},
   "repository": {
-		"type": "git",
-		"url": "https://github.com/Gamesome-ab/route-builder.git"
-	},
-	"keywords": [
-		"astro",
+    "type": "git",
+    "url": "https://github.com/Gamesome-ab/route-builder.git"
+  },
+  "keywords": [
+    "astro",
     "react",
     "svelte",
     "vue",
-		"withastro"
-	],
-	"author": "Johan Svensson",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/Gamesome-ab/route-builder/issues"
-	},
-	"homepage": "https://github.com/Gamesome-ab/route-builder#readme",
-	"publishConfig": {
-		"access": "public"
-	}
+    "withastro"
+  ],
+  "author": "Johan Svensson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Gamesome-ab/route-builder/issues"
+  },
+  "homepage": "https://github.com/Gamesome-ab/route-builder#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }
