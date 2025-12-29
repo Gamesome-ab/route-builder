@@ -12,44 +12,32 @@ import {
  * Recursively builds callable, typesafe, routes from a RouteMap, prepending
  * prefixes as it goes. Type hints are preserved throughout.
  *
- * Recommended to use defineRoutes first to ensure the RouteMap is valid.
+ * For best type hinting, it's recommended to not declare routes as `const`, but
+ * rather inline the object. You can use `satisfies RouteMap`, but this type does
+ * not saisfy all the requirements for a RouteMap.
  *
  * @param r - The RouteMap or string to build routes from.
  * @param prefix - The prefix to prepend to each route. (not included in type hints!)
  * @returns The built routes with prefixes applied.
  *
  * @example
- * const routes = {
+ * const builtRoutes = buildRoutes({
  *   $: '/',
  *   user: {
  *     $: '/users',
  *     id: (userId: string) => `/${userId}`,
  *   },
- * } satisfies RouteMap;
- *
- * const builtRoutes = buildRoutes(routes);
+ * });
  *
  * const foo = routes.users.id('123'); // returns "/users/123", type hint is "/users/{string}"
  *
  * @example
- * const routesWithPrefix = {
+ * const routesWithPrefix = buildRoutes({
  *   $: '/',
  *   about: '/about',
- * } satisfies RouteMap;
- *
- * const builtRoutesWithPrefix = buildRoutes(routesWithPrefix, 'http://example.com');
+ * }, 'http://example.com');
  *
  * const aboutUrl = routesWithPrefix.about; // returns "http://example.com/about", type hint is "/about"
- *
- * @example
- * const validatedRoutes = buildRoutes(
- *   defineRoutes({
- *     $: '/',
- *     contact: '/contact',
- *   })
- * );
- *
- * const contactUrl = validatedRoutes.contact; // returns "/contact", type hint is "/contact"
  */
 export const buildRoutes: typeof _buildRoutes = (r, prefix) => {
   return _buildRoutes(r, prefix);

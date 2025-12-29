@@ -1,1 +1,1 @@
-export * from './lib/build-routes.js';
+export * from './lib/build-routes';
