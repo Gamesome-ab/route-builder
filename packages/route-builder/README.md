@@ -1,6 +1,6 @@
 ## @gamesome/route-builder
 
-Let's you build your application's routes in a type-safe way with support for dynamic segments like so:
+Lets you build your application's routes in a type-safe way with support for dynamic segments like so:
 
 ```typescript
 import { buildRoutes } from '@gamesome/route-builder';
@@ -25,3 +25,11 @@ In your IDE you will see autocompletion for both static and dynamic routes. as w
 
 ![routes typehint](./docs/obj-typehint.png)
 ![dynamic route typehint](./docs/prop-typehint.png)
+
+### Installation
+
+```bash
+npm install @gamesome/route-builder
+# or
+yarn add @gamesome/route-builder
+```
