@@ -28,6 +28,14 @@
     "vitest": "4.0.16"
   },
   "dependencies": {},
+  "scripts": {
+    "prepare": "git config core.hooksPath .githooks",
+    "tltb": "nx run-many --target=typecheck,lint,test,build --all",
+		"pre-push": "pnpm tltb",
+    "pre-commit": "pnpm tltb",
+		"prepack": "pnpm tltb",
+		"prepublishOnly": "pnpm tltb"
+	},
   "nx": {
     "includedScripts": [],
     "targets": {

@@ -1,0 +1,2 @@
+#!/bin/sh
+NX_TUI=false nix develop --command pnpm run pre-commit
