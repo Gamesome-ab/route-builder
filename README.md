@@ -45,22 +45,22 @@ In your IDE you will see autocompletion for both static and dynamic routes. as w
 
 ### Preview of the entire route tree
 <picture>
-  <img src="./packages/route-builder/docs/prop-typehint.png" alt="dynamic route typehint" width="50%" />
+  <img src="https://github.com/user-attachments/assets/25d20f84-415d-46e5-ac70-66672f2714ca" alt="dynamic route typehint" width="50%" />
 </picture>
 
 ### Preview of an entry
 <picture>
-  <img src="./packages/route-builder/docs/obj-typehint.png" alt="routes typehint" width="50%" />
+  <img src="https://github.com/user-attachments/assets/fc24d58b-0ed2-435d-8c66-029da1fcd2f9" alt="routes typehint" width="50%" />
 </picture>
 
 ### Custom base url
 <picture>
-  <img src="./packages/route-builder/docs/obj-typehint.png" alt="routes typehint" width="50%" />
+  <img src="https://github.com/user-attachments/assets/05cca05a-9437-4a46-8fcc-d60e027997d2" alt="routes typehint" width="50%" />
 </picture>
 
 ### Shortened custom base url
 <picture>
-  <img src="./packages/route-builder/docs/obj-typehint.png" alt="routes typehint" width="50%" />
+  <img src="https://github.com/user-attachments/assets/c6314c17-abe7-4e75-873d-1d88a1628856" alt="routes typehint" width="50%" />
 </picture>
 
 ## Use cases
