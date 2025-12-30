@@ -10,11 +10,11 @@ You can now build your application's routes in a type-safe way with support for 
 import { buildRoutes } from '@gamesome/route-builder';
 
 const routes = buildRoutes({
-	$: '/',
-	user: {
-		$: '/users',
-		id: (userId: string) => `/${userId}`,
-	},
+  $: '/',
+    user: {
+      $: '/users',
+      id: (userId: string) => `/${userId}`,
+    },
 });
 
 // Static route
@@ -27,13 +27,13 @@ routes.user.id('123'); // "/users/123"
 
 You can also get fancy by creating a branded type like so:
 
-```typescripttypescript
+```typescript
 type UserId = string & { __brand: 'UserId' };
 
 const routes = buildRoutes({
-	user: {
-		id: (userId: string) => `/${userId as UserId}`,
-	},
+  user: {
+    id: (userId: string) => `/${userId as UserId}`,
+  },
 });
 
 routes.user.id('123'); // "/users/${UserId}"

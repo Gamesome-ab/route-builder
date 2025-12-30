@@ -6,3 +6,4 @@
 
 pnpm-lock.yaml
 package.json
+*.md
