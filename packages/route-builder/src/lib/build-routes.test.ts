@@ -1,43 +1,45 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { buildRoutes } from './build-routes';
-import { Expect, Equal } from './test-utils';
+import { buildRoutes, _buildRoutes } from './build-routes';
+import type { BaseUrl, Equal } from './types';
 
-describe('buildRoutes (string)', () => {
+type Expect<T extends true> = T;
+
+describe('_buildRoutes (string)', () => {
 	it('should build route from a string', () => {
-		const result = buildRoutes('/simple');
+		const result = _buildRoutes('/simple');
 
 		expect(result).toBe('/simple');
 
 		type _R = Expect<Equal<typeof result, '/simple'>>;
 	});
 
-	it('should build route from a string with a prefix', () => {
-		const prefix = 'http://some-prefix.com';
-		const result = buildRoutes('/simple', prefix);
+	it('should build route from a string with a baseUrl', () => {
+		const baseUrl = 'http://base-url.com';
+		const result = _buildRoutes('/simple', baseUrl);
 
-		expect(result).toBe('http://some-prefix.com/simple');
+		expect(result).toBe('http://base-url.com/simple');
 
 		type _R = Expect<Equal<typeof result, '/simple'>>;
 	});
 
 	it('should TS error when building route from an empty string', () => {
 		// @ts-expect-error - testing invalid route
-		const result = buildRoutes('');
+		const result = _buildRoutes('');
 	});
 
 	it('should TS error when building route from string not starting with /', () => {
 		// @ts-expect-error - testing invalid route
-		const result = buildRoutes('simple');
+		const result = _buildRoutes('simple');
 	});
 
 	it('should TS error when building route from string ending in /', () => {
 		// @ts-expect-error - testing invalid route
-		const result = buildRoutes('simple/');
+		const result = _buildRoutes('simple/');
 	});
 
 	it('should TS error when building route from string starting and ending in /', () => {
 		// @ts-expect-error - testing invalid route
-		const result = buildRoutes('/simple/');
+		const result = _buildRoutes('/simple/');
 	});
 });
 
@@ -67,8 +69,8 @@ describe('buildRoutes (simple object)', () => {
 		>;
 	});
 
-	it('should build routes with type-hints from a routeMap with prefix', () => {
-		const prefix = 'http://some-prefix.com';
+	it('should build routes with short type-hints from a routeMap with baseUrl', () => {
+		const baseUrl = 'http://base-url.com';
 
 		const result = buildRoutes(
 			{
@@ -84,22 +86,68 @@ describe('buildRoutes (simple object)', () => {
 					},
 				},
 			},
-			prefix
+			{ baseUrl }
 		);
-		expect(result.$).toBe('http://some-prefix.com/');
-		expect(result.non$).toBe('http://some-prefix.com/non-$');
-		expect(result.branch1.$).toBe('http://some-prefix.com/branch-1');
-		expect(result.branch2.$).toBe('http://some-prefix.com/branch-2');
+		expect(result.$).toBe('http://base-url.com/');
+		expect(result.non$).toBe('http://base-url.com/non-$');
+		expect(result.branch1.$).toBe('http://base-url.com/branch-1');
+		expect(result.branch2.$).toBe('http://base-url.com/branch-2');
 		expect(result.branch2.branch21.$).toBe(
-			'http://some-prefix.com/branch-2/branch-2-1'
+			'http://base-url.com/branch-2/branch-2-1'
 		);
 
-		type _$ = Expect<Equal<typeof result.$, '/'>>;
-		type _Non$ = Expect<Equal<typeof result.non$, '/non-$'>>;
-		type _Branch1 = Expect<Equal<typeof result.branch1.$, `/branch-1`>>;
-		type _Branch2 = Expect<Equal<typeof result.branch2.$, `/branch-2`>>;
+		type _$ = Expect<Equal<typeof result.$, `${BaseUrl}/`>>;
+		type _Non$ = Expect<Equal<typeof result.non$, `${BaseUrl}/non-$`>>;
+		type _Branch1 = Expect<
+			Equal<typeof result.branch1.$, `${BaseUrl}/branch-1`>
+		>;
+		type _Branch2 = Expect<
+			Equal<typeof result.branch2.$, `${BaseUrl}/branch-2`>
+		>;
 		type _Branch21 = Expect<
-			Equal<typeof result.branch2.branch21.$, `/branch-2/branch-2-1`>
+			Equal<typeof result.branch2.branch21.$, `${BaseUrl}/branch-2/branch-2-1`>
+		>;
+	});
+	it('should build routes with full type-hints from a routeMap with baseUrl', () => {
+		const baseUrl = 'http://base-url.com';
+
+		const result = buildRoutes(
+			{
+				$: '/',
+				non$: '/non-$',
+				branch1: {
+					$: '/branch-1',
+				},
+				branch2: {
+					$: '/branch-2',
+					branch21: {
+						$: '/branch-2-1',
+					},
+				},
+			},
+			{ baseUrl, includeFullInTypeHints: true }
+		);
+		expect(result.$).toBe('http://base-url.com/');
+		expect(result.non$).toBe('http://base-url.com/non-$');
+		expect(result.branch1.$).toBe('http://base-url.com/branch-1');
+		expect(result.branch2.$).toBe('http://base-url.com/branch-2');
+		expect(result.branch2.branch21.$).toBe(
+			'http://base-url.com/branch-2/branch-2-1'
+		);
+
+		type _$ = Expect<Equal<typeof result.$, `http://base-url.com/`>>;
+		type _Non$ = Expect<Equal<typeof result.non$, `http://base-url.com/non-$`>>;
+		type _Branch1 = Expect<
+			Equal<typeof result.branch1.$, `http://base-url.com/branch-1`>
+		>;
+		type _Branch2 = Expect<
+			Equal<typeof result.branch2.$, `http://base-url.com/branch-2`>
+		>;
+		type _Branch21 = Expect<
+			Equal<
+				typeof result.branch2.branch21.$,
+				`http://base-url.com/branch-2/branch-2-1`
+			>
 		>;
 	});
 
@@ -130,6 +178,28 @@ describe('buildRoutes (simple object)', () => {
 			},
 		});
 	});
+
+	it('should TS error with empty paths (or just slash)', () => {
+		const result = buildRoutes({
+			$: '/',
+			// @ts-expect-error - testing invalid routeMap
+			non$: '/non-$/',
+			branch1: {
+				// @ts-expect-error - testing invalid routeMap
+				$: '/',
+			},
+		});
+
+		const result2 = buildRoutes({
+			// @ts-expect-error - testing invalid routeMap
+			$: '',
+			non$: '/non-$/', // <- ideally this would also error, but TS shows only the first
+			branch1: {
+				// @ts-expect-error - testing invalid routeMap
+				$: '',
+			},
+		});
+	});
 });
 
 describe('buildRoutes (functions)', () => {
@@ -139,6 +209,36 @@ describe('buildRoutes (functions)', () => {
 		expect(result.id('123')).toBe('/item/123');
 
 		type _Id = Expect<Equal<ReturnType<typeof result.id>, `/item/${string}`>>;
+	});
+
+	it('should build routes from a function with short baseUrl', () => {
+		const baseUrl = 'http://base-url.com';
+
+		const result = buildRoutes(
+			{ id: (id: string) => `/item/${id}` },
+			{ baseUrl }
+		);
+
+		expect(result.id('123')).toBe('http://base-url.com/item/123');
+
+		type _Id = Expect<
+			Equal<ReturnType<typeof result.id>, `${BaseUrl}/item/${string}`>
+		>;
+	});
+
+	it('should build routes from a function with full baseUrl', () => {
+		const baseUrl = 'http://base-url.com';
+
+		const result = buildRoutes(
+			{ id: (id: string) => `/item/${id}` },
+			{ baseUrl, includeFullInTypeHints: true }
+		);
+
+		expect(result.id('123')).toBe('http://base-url.com/item/123');
+
+		type _Id = Expect<
+			Equal<ReturnType<typeof result.id>, `http://base-url.com/item/${string}`>
+		>;
 	});
 
 	it('should build handle branded strings', () => {
@@ -223,6 +323,84 @@ describe('buildRoutes (functions)', () => {
 		type _NestedRoot = Expect<Equal<typeof result.nested.$, '/base/nested'>>;
 		type _NestedItem = Expect<
 			Equal<ReturnType<typeof result.nested.item>, `/base/nested/${ItemId}`>
+		>;
+	});
+
+	it('should build routes with $, nested functions and short baseUrl', () => {
+		type ItemId = string & { __brand: 'ItemId' };
+
+		const baseUrl = 'http://base-url.com';
+
+		const result = buildRoutes(
+			{
+				$: '/base',
+				id: (id: string) => `/${id}`,
+				nested: {
+					$: '/nested',
+					item: (itemId: string) => `/${itemId as ItemId}`,
+				},
+			},
+			{ baseUrl }
+		);
+
+		expect(result.$).toBe('http://base-url.com/base');
+		expect(result.id('123')).toBe('http://base-url.com/base/123');
+		expect(result.nested.$).toBe('http://base-url.com/base/nested');
+		expect(result.nested.item('456')).toBe(
+			'http://base-url.com/base/nested/456'
+		);
+
+		type _$ = Expect<Equal<typeof result.$, `${BaseUrl}/base`>>;
+		type _Id = Expect<
+			Equal<ReturnType<typeof result.id>, `${BaseUrl}/base/${string}`>
+		>;
+		type _NestedRoot = Expect<
+			Equal<typeof result.nested.$, `${BaseUrl}/base/nested`>
+		>;
+		type _NestedItem = Expect<
+			Equal<
+				ReturnType<typeof result.nested.item>,
+				`${BaseUrl}/base/nested/${ItemId}`
+			>
+		>;
+	});
+
+	it('should build routes with $, nested functions and full baseUrl', () => {
+		type ItemId = string & { __brand: 'ItemId' };
+
+		const baseUrl = 'http://base-url.com';
+
+		const result = buildRoutes(
+			{
+				$: '/base',
+				id: (id: string) => `/${id}`,
+				nested: {
+					$: '/nested',
+					item: (itemId: string) => `/${itemId as ItemId}`,
+				},
+			},
+			{ baseUrl, includeFullInTypeHints: true }
+		);
+
+		expect(result.$).toBe('http://base-url.com/base');
+		expect(result.id('123')).toBe('http://base-url.com/base/123');
+		expect(result.nested.$).toBe('http://base-url.com/base/nested');
+		expect(result.nested.item('456')).toBe(
+			'http://base-url.com/base/nested/456'
+		);
+
+		type _$ = Expect<Equal<typeof result.$, `http://base-url.com/base`>>;
+		type _Id = Expect<
+			Equal<ReturnType<typeof result.id>, `http://base-url.com/base/${string}`>
+		>;
+		type _NestedRoot = Expect<
+			Equal<typeof result.nested.$, `http://base-url.com/base/nested`>
+		>;
+		type _NestedItem = Expect<
+			Equal<
+				ReturnType<typeof result.nested.item>,
+				`http://base-url.com/base/nested/${ItemId}`
+			>
 		>;
 	});
 

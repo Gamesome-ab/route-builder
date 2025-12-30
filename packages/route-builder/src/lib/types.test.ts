@@ -1,12 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Expect, Equal } from './test-utils';
 import {
+	Equal,
 	PathGenerator,
 	PathLiteral,
 	RouteMap,
+	StringPartFromLiteral,
+	Validate,
 	ValidatePath,
+	ValidLiteral,
 	ValidRouteMap,
+	WithLeadingSlash,
+	WithoutTrailingSlash,
 } from './types';
+
+type Expect<T extends true> = T;
 
 describe('PathLiteral', () => {
 	it('should allow just a slash', () => {
@@ -73,6 +80,92 @@ describe('PathGenerator', () => {
 	});
 });
 
+describe('WithoutTrailingSlash', () => {
+	it('should remove trailing slash from paths', () => {
+		type Path1 = WithoutTrailingSlash<'/example/'>;
+		type Path2 = WithoutTrailingSlash<'/example/nested/'>;
+		type Path3 = WithoutTrailingSlash<'/example'>;
+		type Path4 = WithoutTrailingSlash<'/'>;
+		type Path5 = WithoutTrailingSlash<''>;
+		type Path6 = WithoutTrailingSlash<'without-leading/'>;
+		type Path7 = WithoutTrailingSlash<'without-leading//'>;
+
+		const path1: Path1 = '/example';
+		const path2: Path2 = '/example/nested';
+		const path3: Path3 = '/example';
+		const path4: Path4 = '';
+		const path5: Path5 = '';
+		const path6: Path6 = 'without-leading';
+		const path7: Path7 = 'without-leading';
+
+		type Test1 = Expect<Equal<Path1, '/example'>>;
+		type Test2 = Expect<Equal<Path2, '/example/nested'>>;
+		type Test3 = Expect<Equal<Path3, '/example'>>;
+		type Test4 = Expect<Equal<Path4, ''>>;
+		type Test5 = Expect<Equal<Path5, ''>>;
+		type Test6 = Expect<Equal<Path6, 'without-leading'>>;
+		type Test7 = Expect<Equal<Path7, 'without-leading'>>;
+	});
+});
+
+describe('WithLeadingSlash', () => {
+	it('should add leading slash to paths', () => {
+		type Path1 = WithLeadingSlash<'example'>;
+		type Path2 = WithLeadingSlash<'/example'>;
+		type Path3 = WithLeadingSlash<'example/nested'>;
+		type Path4 = WithLeadingSlash<'/example/nested'>;
+		type Path5 = WithLeadingSlash<''>;
+
+		const path1: Path1 = '/example';
+		const path2: Path2 = '/example';
+		const path3: Path3 = '/example/nested';
+		const path4: Path4 = '/example/nested';
+		const path5: Path5 = '/';
+
+		type Test1 = Expect<Equal<Path1, '/example'>>;
+		type Test2 = Expect<Equal<Path2, '/example'>>;
+		type Test3 = Expect<Equal<Path3, '/example/nested'>>;
+		type Test4 = Expect<Equal<Path4, '/example/nested'>>;
+		type Test5 = Expect<Equal<Path5, '/'>>;
+	});
+
+	it('should remove multiple leading slashes', () => {
+		type Path1 = WithLeadingSlash<'//example'>;
+		type Path2 = WithLeadingSlash<'///example/nested'>;
+
+		const path1: Path1 = '/example';
+		const path2: Path2 = '/example/nested';
+
+		type Test1 = Expect<Equal<Path1, '/example'>>;
+		type Test2 = Expect<Equal<Path2, '/example/nested'>>;
+	});
+});
+
+describe('StringPartFromPath', () => {
+	it('should extract string part from paths', () => {
+		type Path1 = StringPartFromLiteral<'/example/'>;
+		type Path2 = StringPartFromLiteral<'example/nested/'>;
+		type Path3 = StringPartFromLiteral<'/example'>;
+		type Path4 = StringPartFromLiteral<'example'>;
+		type Path5 = StringPartFromLiteral<'/'>;
+		type Path6 = StringPartFromLiteral<''>;
+
+		const path1: Path1 = 'example';
+		const path2: Path2 = 'example/nested';
+		const path3: Path3 = 'example';
+		const path4: Path4 = 'example';
+		const path5: Path5 = '';
+		const path6: Path6 = '';
+
+		type Test1 = Expect<Equal<Path1, 'example'>>;
+		type Test2 = Expect<Equal<Path2, 'example/nested'>>;
+		type Test3 = Expect<Equal<Path3, 'example'>>;
+		type Test4 = Expect<Equal<Path4, 'example'>>;
+		type Test5 = Expect<Equal<Path5, ''>>;
+		type Test6 = Expect<Equal<Path6, ''>>;
+	});
+});
+
 describe('RouteMap', () => {
 	it('should allow simple map', () => {
 		const result: RouteMap = {
@@ -114,38 +207,104 @@ describe('RouteMap', () => {
 	});
 });
 
-describe('ValidatePath', () => {
-	it('should validate valid paths', () => {
-		type ValidPath1 = ValidatePath<'/'>;
-		type ValidPath2 = ValidatePath<'/example'>;
-		type ValidPath3 = ValidatePath<'/example/nested'>;
+describe('Validate', () => {
+	it('should validate with ValidLiteral', () => {
+		type ValidPath1 = Validate<ValidLiteral<'/example'>, '/example'>;
+		type ValidPath2 = Validate<
+			ValidLiteral<'/example/nested'>,
+			'/example/nested'
+		>;
 
-		const path1: ValidPath1 = '/';
-		const path2: ValidPath2 = '/example';
-		const path3: ValidPath3 = '/example/nested';
+		type Test1 = Expect<Equal<ValidPath1, '/example'>>;
+		type Test2 = Expect<Equal<ValidPath2, '/example/nested'>>;
 
-		type Test1 = Expect<Equal<ValidPath1, '/'>>;
-		type Test2 = Expect<Equal<ValidPath2, '/example'>>;
-		type Test3 = Expect<Equal<ValidPath3, '/example/nested'>>;
+		type ValidQuery = Validate<ValidLiteral<'?search=query'>, '?search=query'>;
+		type Test3 = Expect<Equal<ValidQuery, '?search=query'>>;
+
+		type ValidHash = Validate<ValidLiteral<'#section1'>, '#section1'>;
+		type Test4 = Expect<Equal<ValidHash, '#section1'>>;
 	});
 
-	it('should invalidate paths with trailing slashes', () => {
-		type InvalidPath1 = ValidatePath<'nested/'>;
-		type InvalidPath2 = ValidatePath<'/nested/'>;
-
-		// @ts-expect-error - should not allow trailing slash
-		const path1: InvalidPath1 = 'nested/';
-
-		// @ts-expect-error - should not allow trailing slash
-		const path2: InvalidPath2 = '/nested/';
+	it('should invalidate with ValidLiteral', () => {
+		type InvalidPath1 = Validate<ValidLiteral<'nested/'>, 'nested/'>;
+		type InvalidPath2 = Validate<ValidLiteral<'/nested/'>, '/nested/'>;
+		type InvalidPath3 = Validate<ValidLiteral<'//nested'>, '//nested'>;
 
 		type Test1 = Expect<
-			Equal<InvalidPath1, { error: 'Path has trailing slash'; path: 'nested/' }>
+			Equal<
+				InvalidPath1,
+				{
+					error: 'Invalid path';
+					didYouMean: '/nested';
+				}
+			>
 		>;
 		type Test2 = Expect<
 			Equal<
 				InvalidPath2,
-				{ error: 'Path has trailing slash'; path: '/nested/' }
+				{
+					error: 'Invalid path';
+					didYouMean: '/nested';
+				}
+			>
+		>;
+		type Test3 = Expect<
+			Equal<
+				InvalidPath3,
+				{
+					error: 'Invalid path';
+					didYouMean: '/nested';
+				}
+			>
+		>;
+
+		type InvalidQuery1 = Validate<ValidLiteral<'?'>, '?'>;
+		type InvalidQuery2 = Validate<ValidLiteral<'??kalle'>, '??kalle'>;
+
+		type Test4 = Expect<
+			Equal<
+				InvalidQuery1,
+				{
+					error: 'Invalid path';
+					didYouMean: {
+						error: 'Must be non-empty path (/, ? or # alone are not allowed)';
+						path: '?';
+					};
+				}
+			>
+		>;
+		type Test5 = Expect<
+			Equal<
+				InvalidQuery2,
+				{
+					error: 'Invalid path';
+					didYouMean: '?kalle';
+				}
+			>
+		>;
+
+		type InvalidHash1 = Validate<ValidLiteral<'#'>, '#'>;
+		type InvalidHash2 = Validate<ValidLiteral<'##section'>, '##section'>;
+
+		type Test6 = Expect<
+			Equal<
+				InvalidHash1,
+				{
+					error: 'Invalid path';
+					didYouMean: {
+						error: 'Must be non-empty path (/, ? or # alone are not allowed)';
+						path: '#';
+					};
+				}
+			>
+		>;
+		type Test7 = Expect<
+			Equal<
+				InvalidHash2,
+				{
+					error: 'Invalid path';
+					didYouMean: '#section';
+				}
 			>
 		>;
 	});
@@ -193,19 +352,28 @@ describe('ValidRouteMap', () => {
 		type Test1 = Expect<
 			Equal<
 				InvalidMap['$'],
-				{ error: 'Path has trailing slash'; path: 'root/' }
+				{
+					error: 'Invalid path';
+					didYouMean: '/root';
+				}
 			>
 		>;
 		type Test2 = Expect<
 			Equal<
 				InvalidMap['posts']['$'],
-				{ error: 'Path has trailing slash'; path: 'posts/' }
+				{
+					error: 'Invalid path';
+					didYouMean: '/posts';
+				}
 			>
 		>;
 		type Test3 = Expect<
 			Equal<
 				ReturnType<InvalidMap['posts']['id']>,
-				{ error: 'Path has trailing slash'; path: `${string}/` }
+				{
+					error: 'Invalid path';
+					didYouMean: `/${string}`;
+				}
 			>
 		>;
 	});

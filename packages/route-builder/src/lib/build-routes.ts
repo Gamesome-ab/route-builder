@@ -1,12 +1,25 @@
 import {
+	BaseUrl,
 	PathGenerator,
 	PathLiteral,
 	ResolvedRoutes,
 	RouteMap,
-	ValidatePath,
+	ValidatePath, // TODO: remove
 	ValidRouteMap,
 	YOLO,
 } from './types';
+
+type BaseUrlConfig = {
+	baseUrl: string;
+	/**
+	 * If true, the full URL will be included in type hints.
+	 * Default is false, meaning only a placeholder `baseUrl` will be included
+	 * in type hints. This is likely what you want for most use-cases, as it
+	 * likely comes from a dynamic source at runtime and/or just makes the
+	 * type hints unreadable.
+	 */
+	includeFullInTypeHints?: boolean;
+};
 
 /**
  * Recursively builds callable, typesafe, routes from a RouteMap, prepending
@@ -39,29 +52,56 @@ import {
  *
  * const aboutUrl = routesWithPrefix.about; // returns "http://example.com/about", type hint is "/about"
  */
-export const buildRoutes: typeof _buildRoutes = (r, prefix) => {
-	return _buildRoutes(r, prefix);
-};
+// export function buildRoutes<T extends RouteMap>(
+// 	r: ValidRouteMap<T> extends never ? never : T,
+// 	baseUrlConfig: BaseUrlConfig = {}
+// ) {
+// 	return _buildRoutes(r, baseUrlConfig.baseUrl || '');
+// }
 
-function _buildRoutes<
-	const T extends RouteMap | PathLiteral,
-	Prefix extends string = '',
-	// >(r: ValidRouteMap<T>, prefix = '') {
+export function buildRoutes<const T extends RouteMap>(
+	r: T extends PathLiteral ? ValidatePath<T> : ValidRouteMap<T>
+): ResolvedRoutes<T>;
+
+export function buildRoutes<
+	const T extends RouteMap,
+	const B extends BaseUrlConfig,
 >(
-	r: T extends string ? ValidatePath<T> : ValidRouteMap<T>,
+	r: T extends PathLiteral ? ValidatePath<T> : ValidRouteMap<T>,
+	baseUrlConfig: B
+): ResolvedRoutes<
+	T,
+	'',
+	B extends { includeFullInTypeHints: true }
+		? B extends { baseUrl: infer U extends string }
+			? U
+			: never
+		: BaseUrl
+>;
+
+export function buildRoutes<const T extends RouteMap>(
+	r: T extends PathLiteral ? ValidatePath<T> : ValidRouteMap<T>,
+	baseUrlConfig?: BaseUrlConfig
+) {
+	return _buildRoutes(r, '', baseUrlConfig?.baseUrl, true);
+}
+
+export function _buildRoutes<const T extends RouteMap | PathLiteral>(
+	r: T extends PathLiteral ? ValidatePath<T> : ValidRouteMap<T>,
 	prefix = '',
-	first = true
+	baseUrl = '',
+	first = false
 ) {
 	if (typeof r === 'string') {
-		return `${prefix}${r}` as ResolvedRoutes<T, Prefix>;
+		return `${baseUrl}${prefix}${r}` as ResolvedRoutes<T>;
 	}
 	if (typeof r === 'function') {
 		const f = r as PathGenerator;
 		return ((...args: YOLO[]) =>
-			buildRoutes(f(...args), prefix, false)) as unknown as ResolvedRoutes<
-			T,
-			Prefix
-		>;
+			_buildRoutes(
+				f(...args),
+				baseUrl + prefix
+			)) as unknown as ResolvedRoutes<T>;
 	}
 	if (typeof r === 'object') {
 		const newObj = {} as YOLO;
@@ -74,17 +114,15 @@ function _buildRoutes<
 
 		for (const key in r) {
 			if (key === '$' && typeof r['$'] === 'string') {
-				newObj['$'] = currentPrefix;
+				newObj['$'] = baseUrl + currentPrefix;
 			} else {
-				if (first && currentPrefix === '/') {
-					// Prevent double-slash at beginning when first $ is '/'
-					newObj[key] = buildRoutes(r[key] as RouteMap, '', false);
-				} else {
-					newObj[key] = buildRoutes(r[key] as RouteMap, currentPrefix, false);
-				}
+				newObj[key] = _buildRoutes(
+					r[key] as RouteMap,
+					first && currentPrefix === '/' ? baseUrl : baseUrl + currentPrefix
+				);
 			}
 		}
-		return newObj as ResolvedRoutes<T, Prefix>;
+		return newObj as ResolvedRoutes<T>;
 	}
-	return r as unknown as ResolvedRoutes<T, Prefix>;
+	return r as unknown as ResolvedRoutes<T>;
 }
