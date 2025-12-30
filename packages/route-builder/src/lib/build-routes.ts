@@ -4,10 +4,14 @@ import {
 	PathLiteral,
 	ResolvedRoutes,
 	RouteMap,
-	ValidatePath, // TODO: remove
+	Validate,
+	ValidLiteral,
 	ValidRouteMap,
 	YOLO,
 } from './types';
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+type ExtendsOrEmpty<T, U, Y> = T extends U ? Y : {};
 
 type BaseUrlConfig = {
 	baseUrl: string;
@@ -18,7 +22,12 @@ type BaseUrlConfig = {
 	 * likely comes from a dynamic source at runtime and/or just makes the
 	 * type hints unreadable.
 	 */
-	includeFullInTypeHints?: boolean;
+	fullBaseUrlInTypeHints?: boolean;
+	/**
+	 * if true, routeBuilder will return:
+	 * `{routes: {r: ResolvedRoutes, withBaseUrls: ResolvedRoutesWithBaseUrl} }`
+	 */
+	inSeparateBranch?: boolean;
 };
 
 /**
@@ -60,34 +69,57 @@ type BaseUrlConfig = {
 // }
 
 export function buildRoutes<const T extends RouteMap>(
-	r: T extends PathLiteral ? ValidatePath<T> : ValidRouteMap<T>
+	r: T extends PathLiteral ? Validate<ValidLiteral<T>, T> : ValidRouteMap<T>
 ): ResolvedRoutes<T>;
 
 export function buildRoutes<
 	const T extends RouteMap,
 	const B extends BaseUrlConfig,
 >(
-	r: T extends PathLiteral ? ValidatePath<T> : ValidRouteMap<T>,
+	r: T extends PathLiteral ? Validate<ValidLiteral<T>, T> : ValidRouteMap<T>,
 	baseUrlConfig: B
 ): ResolvedRoutes<
 	T,
 	'',
-	B extends { includeFullInTypeHints: true }
-		? B extends { baseUrl: infer U extends string }
-			? U
-			: never
-		: BaseUrl
->;
+	B extends { inSeparateBranch: true }
+		? ''
+		: B extends { fullBaseUrlInTypeHints: true }
+			? B extends { baseUrl: infer U extends string }
+				? U
+				: never
+			: BaseUrl
+> &
+	ExtendsOrEmpty<
+		B,
+		{ inSeparateBranch: true },
+		{
+			withBaseUrl: ResolvedRoutes<
+				T,
+				'',
+				B extends { fullBaseUrlInTypeHints: true }
+					? B extends { baseUrl: infer U extends string }
+						? U
+						: never
+					: BaseUrl
+			>;
+		}
+	>;
 
 export function buildRoutes<const T extends RouteMap>(
-	r: T extends PathLiteral ? ValidatePath<T> : ValidRouteMap<T>,
+	r: ValidRouteMap<T>,
 	baseUrlConfig?: BaseUrlConfig
 ) {
-	return _buildRoutes(r, '', baseUrlConfig?.baseUrl, true);
+	if (baseUrlConfig?.inSeparateBranch) {
+		return {
+			...(_buildRoutes(r as YOLO, '', '', true) as ResolvedRoutes<T>),
+			withBaseUrl: _buildRoutes(r as YOLO, '', baseUrlConfig?.baseUrl, true),
+		};
+	}
+	return _buildRoutes(r as YOLO, '', baseUrlConfig?.baseUrl, true);
 }
 
 export function _buildRoutes<const T extends RouteMap | PathLiteral>(
-	r: T extends PathLiteral ? ValidatePath<T> : ValidRouteMap<T>,
+	r: T extends PathLiteral ? Validate<ValidLiteral<T>, T> : ValidRouteMap<T>,
 	prefix = '',
 	baseUrl = '',
 	first = false

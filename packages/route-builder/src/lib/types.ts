@@ -37,7 +37,7 @@ export type ResolvedRoutes<
 	P extends string = '', // Prefix
 	B extends string = '', // BaseUrl
 > = T extends string // Never used, but improves typehints when hovering the return from buildRoutes (without it, we lose the prefixes there)
-	? ValidatePath<`${P}${T}`>
+	? Validate<ValidLiteral<`${P}${T}`>, `${P}${T}`>
 	: {
 			[K in keyof T]: T[K] extends string // Route is not just a string, specifically it has to be an object. it might have a string value.
 				? K extends '$' // 1. We are in one of the leaf-nodes (since value is just a string).
@@ -97,11 +97,11 @@ export type StringPartFromLiteral<T extends string> = WithoutTrailingSlash<
 	WithoutLeadingSlash<WithoutLeadingQuery<WithoutLeadingHash<T>>>
 >;
 
-export type ValidatePath<T extends string> = T extends '/'
-	? T
-	: T extends `${string}/`
-		? { error: 'Path has trailing slash'; path: T }
-		: T;
+// export type ValidatePath<T extends string> = T extends '/'
+// 	? T
+// 	: T extends `${string}/`
+// 		? { error: 'Path has trailing slash'; path: T }
+// 		: T;
 
 export type ValidFirst$<T extends string> = WithLeadingSlash<
 	WithoutTrailingSlash<T>
@@ -128,7 +128,7 @@ export type Validate<Ideal, Actual> =
 
 /**
  * A mapped type that validates all paths in a RouteMap to ensure they
- * conform to the ValidatePath rules.
+ * conform to the ValidateFirst$ and ValidLiteral rules.
  */
 export type ValidRouteMap<T, First extends true | false = true> = {
 	[K in keyof T]: T[K] extends string

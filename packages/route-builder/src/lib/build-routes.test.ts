@@ -27,6 +27,11 @@ describe('_buildRoutes (string)', () => {
 		const result = _buildRoutes('');
 	});
 
+	it('should TS error when building route from `/`', () => {
+		// @ts-expect-error - testing invalid route
+		const result = _buildRoutes('/');
+	});
+
 	it('should TS error when building route from string not starting with /', () => {
 		// @ts-expect-error - testing invalid route
 		const result = _buildRoutes('simple');
@@ -88,6 +93,7 @@ describe('buildRoutes (simple object)', () => {
 			},
 			{ baseUrl }
 		);
+
 		expect(result.$).toBe('http://base-url.com/');
 		expect(result.non$).toBe('http://base-url.com/non-$');
 		expect(result.branch1.$).toBe('http://base-url.com/branch-1');
@@ -125,7 +131,7 @@ describe('buildRoutes (simple object)', () => {
 					},
 				},
 			},
-			{ baseUrl, includeFullInTypeHints: true }
+			{ baseUrl, fullBaseUrlInTypeHints: true }
 		);
 		expect(result.$).toBe('http://base-url.com/');
 		expect(result.non$).toBe('http://base-url.com/non-$');
@@ -146,6 +152,128 @@ describe('buildRoutes (simple object)', () => {
 		type _Branch21 = Expect<
 			Equal<
 				typeof result.branch2.branch21.$,
+				`http://base-url.com/branch-2/branch-2-1`
+			>
+		>;
+	});
+
+	it('should build routes with short type-hints from a routeMap with baseUrl in separate branch', () => {
+		const baseUrl = 'http://base-url.com';
+
+		const result = buildRoutes(
+			{
+				$: '/',
+				non$: '/non-$',
+				branch1: {
+					$: '/branch-1',
+				},
+				branch2: {
+					$: '/branch-2',
+					branch21: {
+						$: '/branch-2-1',
+					},
+				},
+			},
+			{ baseUrl, fullBaseUrlInTypeHints: false, inSeparateBranch: true }
+		);
+		expect(result.$).toBe('/');
+		expect(result.non$).toBe('/non-$');
+		expect(result.branch1.$).toBe('/branch-1');
+		expect(result.branch2.$).toBe('/branch-2');
+		expect(result.branch2.branch21.$).toBe('/branch-2/branch-2-1');
+
+		type _$ = Expect<Equal<typeof result.$, `/`>>;
+		type _Non$ = Expect<Equal<typeof result.non$, `/non-$`>>;
+		type _Branch1 = Expect<Equal<typeof result.branch1.$, `/branch-1`>>;
+		type _Branch2 = Expect<Equal<typeof result.branch2.$, `/branch-2`>>;
+		type _Branch21 = Expect<
+			Equal<typeof result.branch2.branch21.$, `/branch-2/branch-2-1`>
+		>;
+
+		expect(result.withBaseUrl.$).toBe('http://base-url.com/');
+		expect(result.withBaseUrl.non$).toBe('http://base-url.com/non-$');
+		expect(result.withBaseUrl.branch1.$).toBe('http://base-url.com/branch-1');
+		expect(result.withBaseUrl.branch2.$).toBe('http://base-url.com/branch-2');
+		expect(result.withBaseUrl.branch2.branch21.$).toBe(
+			'http://base-url.com/branch-2/branch-2-1'
+		);
+
+		type _WithBase_$ = Expect<
+			Equal<typeof result.withBaseUrl.$, `${BaseUrl}/`>
+		>;
+		type _WithBase_Non$ = Expect<
+			Equal<typeof result.withBaseUrl.non$, `${BaseUrl}/non-$`>
+		>;
+		type _WithBase_Branch1 = Expect<
+			Equal<typeof result.withBaseUrl.branch1.$, `${BaseUrl}/branch-1`>
+		>;
+		type _WithBase_Branch2 = Expect<
+			Equal<typeof result.withBaseUrl.branch2.$, `${BaseUrl}/branch-2`>
+		>;
+		type _WithBase_Branch21 = Expect<
+			Equal<
+				typeof result.withBaseUrl.branch2.branch21.$,
+				`${BaseUrl}/branch-2/branch-2-1`
+			>
+		>;
+	});
+
+	it('should build routes with full type-hints from a routeMap with baseUrl in separate branch', () => {
+		const baseUrl = 'http://base-url.com';
+
+		const result = buildRoutes(
+			{
+				$: '/',
+				non$: '/non-$',
+				branch1: {
+					$: '/branch-1',
+				},
+				branch2: {
+					$: '/branch-2',
+					branch21: {
+						$: '/branch-2-1',
+					},
+				},
+			},
+			{ baseUrl, fullBaseUrlInTypeHints: true, inSeparateBranch: true }
+		);
+		expect(result.$).toBe('/');
+		expect(result.non$).toBe('/non-$');
+		expect(result.branch1.$).toBe('/branch-1');
+		expect(result.branch2.$).toBe('/branch-2');
+		expect(result.branch2.branch21.$).toBe('/branch-2/branch-2-1');
+
+		type _$ = Expect<Equal<typeof result.$, `/`>>;
+		type _Non$ = Expect<Equal<typeof result.non$, `/non-$`>>;
+		type _Branch1 = Expect<Equal<typeof result.branch1.$, `/branch-1`>>;
+		type _Branch2 = Expect<Equal<typeof result.branch2.$, `/branch-2`>>;
+		type _Branch21 = Expect<
+			Equal<typeof result.branch2.branch21.$, `/branch-2/branch-2-1`>
+		>;
+
+		expect(result.withBaseUrl.$).toBe('http://base-url.com/');
+		expect(result.withBaseUrl.non$).toBe('http://base-url.com/non-$');
+		expect(result.withBaseUrl.branch1.$).toBe('http://base-url.com/branch-1');
+		expect(result.withBaseUrl.branch2.$).toBe('http://base-url.com/branch-2');
+		expect(result.withBaseUrl.branch2.branch21.$).toBe(
+			'http://base-url.com/branch-2/branch-2-1'
+		);
+
+		type _WithBase_$ = Expect<
+			Equal<typeof result.withBaseUrl.$, `http://base-url.com/`>
+		>;
+		type _WithBase_Non$ = Expect<
+			Equal<typeof result.withBaseUrl.non$, `http://base-url.com/non-$`>
+		>;
+		type _WithBase_Branch1 = Expect<
+			Equal<typeof result.withBaseUrl.branch1.$, `http://base-url.com/branch-1`>
+		>;
+		type _WithBase_Branch2 = Expect<
+			Equal<typeof result.withBaseUrl.branch2.$, `http://base-url.com/branch-2`>
+		>;
+		type _WithBase_Branch21 = Expect<
+			Equal<
+				typeof result.withBaseUrl.branch2.branch21.$,
 				`http://base-url.com/branch-2/branch-2-1`
 			>
 		>;
@@ -231,7 +359,7 @@ describe('buildRoutes (functions)', () => {
 
 		const result = buildRoutes(
 			{ id: (id: string) => `/item/${id}` },
-			{ baseUrl, includeFullInTypeHints: true }
+			{ baseUrl, fullBaseUrlInTypeHints: true }
 		);
 
 		expect(result.id('123')).toBe('http://base-url.com/item/123');
@@ -379,7 +507,7 @@ describe('buildRoutes (functions)', () => {
 					item: (itemId: string) => `/${itemId as ItemId}`,
 				},
 			},
-			{ baseUrl, includeFullInTypeHints: true }
+			{ baseUrl, fullBaseUrlInTypeHints: true }
 		);
 
 		expect(result.$).toBe('http://base-url.com/base');

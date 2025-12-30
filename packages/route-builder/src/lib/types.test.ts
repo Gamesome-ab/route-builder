@@ -6,7 +6,6 @@ import {
 	RouteMap,
 	StringPartFromLiteral,
 	Validate,
-	ValidatePath,
 	ValidLiteral,
 	ValidRouteMap,
 	WithLeadingSlash,
@@ -34,6 +33,7 @@ describe('PathLiteral', () => {
 	});
 
 	it('should (unfortunately) allow strings with trailing slash if they also have leading slash', () => {
+		// NOTE: This is caught when passed to buildRoutes, but not here in the type itself.
 		const result: PathLiteral = '/nested/';
 	});
 
@@ -69,6 +69,7 @@ describe('PathGenerator', () => {
 	});
 
 	it('should (unfortunately) allow generators that return PathLiteral with leading slash and trailing slash', () => {
+		// NOTE: This is caught when passed to buildRoutes, but not here in the generator itself.
 		const result: PathGenerator = (id: string) => `/${id}/`;
 	});
 
