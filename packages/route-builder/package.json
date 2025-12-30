@@ -1,62 +1,62 @@
 {
-	"name": "@gamesome/route-builder",
-	"description": "Typesafe, ergonomic javascript route-builder. No framework dependencies or magic string nonsense.",
-	"version": "0.0.1",
-	"type": "module",
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"exports": {
-		"./package.json": "./package.json",
-		".": {
-			"root": "./src/index.ts",
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js",
-			"default": "./dist/index.js"
-		}
-	},
-	"files": [
-		"dist",
-		"!**/*.tsbuildinfo"
-	],
-	"nx": {
-		"targets": {
-			"build": {
-				"executor": "@nx/esbuild:esbuild",
-				"outputs": [
-					"{options.outputPath}"
-				],
-				"options": {
-					"outputPath": "packages/route-builder/dist",
-					"main": "packages/route-builder/src/index.ts",
-					"tsConfig": "packages/route-builder/tsconfig.lib.json",
-					"format": [
-						"esm"
-					],
-					"declarationRootDir": "packages/route-builder/src"
-				}
-			}
-		}
-	},
-	"dependencies": {},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Gamesome-ab/route-builder.git"
-	},
-	"keywords": [
-		"astro",
-		"react",
-		"svelte",
-		"vue",
-		"withastro"
-	],
-	"author": "Johan Svensson",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/Gamesome-ab/route-builder/issues"
-	},
-	"homepage": "https://github.com/Gamesome-ab/route-builder#readme",
-	"publishConfig": {
-		"access": "public"
-	}
+  "name": "@gamesome/route-builder",
+  "description": "Typesafe, ergonomic javascript route-builder. No framework dependencies or magic string nonsense.",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "root": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo"
+  ],
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "@nx/esbuild:esbuild",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "options": {
+          "outputPath": "packages/route-builder/dist",
+          "main": "packages/route-builder/src/index.ts",
+          "tsConfig": "packages/route-builder/tsconfig.lib.json",
+          "format": [
+            "esm"
+          ],
+          "declarationRootDir": "packages/route-builder/src"
+        }
+      }
+    }
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gamesome-ab/route-builder.git"
+  },
+  "keywords": [
+    "astro",
+    "react",
+    "svelte",
+    "vue",
+    "withastro"
+  ],
+  "author": "Johan Svensson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Gamesome-ab/route-builder/issues"
+  },
+  "homepage": "https://github.com/Gamesome-ab/route-builder#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }
