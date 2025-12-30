@@ -97,12 +97,6 @@ export type StringPartFromLiteral<T extends string> = WithoutTrailingSlash<
 	WithoutLeadingSlash<WithoutLeadingQuery<WithoutLeadingHash<T>>>
 >;
 
-// export type ValidatePath<T extends string> = T extends '/'
-// 	? T
-// 	: T extends `${string}/`
-// 		? { error: 'Path has trailing slash'; path: T }
-// 		: T;
-
 export type ValidFirst$<T extends string> = WithLeadingSlash<
 	WithoutTrailingSlash<T>
 >;
