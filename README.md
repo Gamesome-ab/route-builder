@@ -124,5 +124,6 @@ Feel free to open issues or submit pull requests! We welcome contributions of al
 To release a new version of the package, run the following command in the root folder:
 
 ```bash
+nx release --skip-publish
 nx release publish --otp=<your-npm-2fa-code>
 ```
