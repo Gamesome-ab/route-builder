@@ -44,6 +44,16 @@
 		"projects": ["packages/*"],
 		"version": {
 			"preVersionCommand": "pnpm dlx nx run-many -t build"
+		},
+		"changelog": {
+			"projectChangelogs": {
+				"renderOptions": {
+					"authors": true,
+					"applyUsernameToAuthors": true,
+					"commitReferences": true,
+					"versionTitleDate": true
+				}
+			}
 		}
 	}
 }
