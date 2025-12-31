@@ -127,3 +127,13 @@ To release a new version of the package, run the following command in the root f
 nx release --skip-publish
 nx release publish --otp=<your-npm-2fa-code>
 ```
+
+The first command will bump the version, generate changelogs and create a git tag. The second command will publish the package to npm. Make sure to replace `<your-npm-2fa-code>` with your actual npm 2FA code if you have 2FA enabled on your npm account.
+
+If you unsuccessfully run the first command, and it creates a git tag, you can delete the tag before pushing with:
+
+```bash
+git tag --delete <tag-name>
+```
+
+Tag name will be something like `v0.0.1`
