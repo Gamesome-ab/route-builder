@@ -17,11 +17,8 @@ const routes = buildRoutes({
     },
 });
 
-// Static route
 routes.$; // "/"
 routes.user.$; // "/users"
-
-// Dynamic route
 routes.user.id('123'); // "/users/123"
 ```
 
@@ -37,6 +34,29 @@ const routes = buildRoutes({
 });
 
 routes.user.id('123'); // "/users/${UserId}"
+```
+
+If you need base urls in your routes you can do that as well. You configure this in the second argument to `buildRoutes` by passing an object with a `baseUrl` property. If you want both relative and absolute urls you can set `inSeparateBranch` to `true` in the same object. Per default the base url will be represented as `BaseUrl` in typehints, but if you want the actual string you can set `fullBaseUrlInTypeHints` to `true`.
+
+```typescript
+const routes = buildRoutes(
+  {
+	$: '/',
+	about: {
+	  $: '/about',
+	},
+  },
+  {
+	baseUrl: 'https://example.com',
+	inSeparateBranch: true,
+	fullBaseUrlInTypeHints: true,
+  }
+);
+
+routes.$; // "/"
+routes.about.$; // "/about"
+routes.withBaseUrl.$; // "https://example.com/"
+routes.withBaseUrl.about.$; // "https://example.com/about"
 ```
 
 ## Type hints
@@ -79,4 +99,30 @@ In your IDE you will see autocompletion for both static and dynamic routes. as w
 npm install @gamesome/route-builder
 # or
 yarn add @gamesome/route-builder
+```
+
+# Setup, contributing and releasing
+
+## Setup
+
+This project uses nix. Do `direnv allow` in the root directory after cloning to enable the nix shell automatically. This will ensure you have the correct Node.js version and other dependencies installed.
+
+This project uses `pnpm` and `nx` as monorepo manager. To install dependencies, run (in the root folder):
+
+```bash
+pnpm install
+```
+
+The project has githooks set up to make sure code is formatted and tests are run before committing. This is mainly to keep the robots in check and avoid unnecessary CI runs.
+
+## Contributing
+
+Feel free to open issues or submit pull requests! We welcome contributions of all kinds, whether it's bug fixes, new features, or documentation improvements.
+
+## Releasing
+
+To release a new version of the package, run the following command in the root folder:
+
+```bash
+nx release publish --otp=<your-npm-2fa-code>
 ```

@@ -17,11 +17,8 @@ const routes = buildRoutes({
     },
 });
 
-// Static route
 routes.$; // "/"
 routes.user.$; // "/users"
-
-// Dynamic route
 routes.user.id('123'); // "/users/123"
 ```
 
@@ -37,6 +34,29 @@ const routes = buildRoutes({
 });
 
 routes.user.id('123'); // "/users/${UserId}"
+```
+
+If you need base urls in your routes you can do that as well. You configure this in the second argument to `buildRoutes` by passing an object with a `baseUrl` property. If you want both relative and absolute urls you can set `inSeparateBranch` to `true` in the same object. Per default the base url will be represented as `BaseUrl` in typehints, but if you want the actual string you can set `fullBaseUrlInTypeHints` to `true`.
+
+```typescript
+const routes = buildRoutes(
+  {
+	$: '/',
+	about: {
+	  $: '/about',
+	},
+  },
+  {
+	baseUrl: 'https://example.com',
+	inSeparateBranch: true,
+	fullBaseUrlInTypeHints: true,
+  }
+);
+
+routes.$; // "/"
+routes.about.$; // "/about"
+routes.withBaseUrl.$; // "https://example.com/"
+routes.withBaseUrl.about.$; // "https://example.com/about"
 ```
 
 ## Type hints
