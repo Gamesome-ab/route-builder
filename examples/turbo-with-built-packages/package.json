@@ -1,5 +1,5 @@
 {
-  "name": "turbo-built-packages",
+  "name": "turbo-with-built-packages",
   "private": true,
   "scripts": {
     "build": "turbo run build",

@@ -118,6 +118,39 @@ export function buildRoutes<const T extends RouteMap>(
 	return _buildRoutes(r as YOLO, '', baseUrlConfig?.baseUrl, true);
 }
 
+/**
+ * Build routes without strict type validation on the input.
+ * Use this with the `route-builder-generate` CLI tool which generates
+ * explicit type definitions for isolatedDeclarations compatibility.
+ *
+ * @example
+ * ```typescript
+ * import { buildRoutesWithGenerator } from '@gamesome/route-builder';
+ * import type { AppRoutes } from './routes.generated';
+ *
+ * export const appRoutes: AppRoutes = buildRoutesWithGenerator({
+ *   $: '/',
+ *   users: {
+ *     $: '/users',
+ *     id: (userId: string) => `/${userId}`,
+ *   },
+ * } as const);
+ * ```
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function buildRoutesWithGenerator<T>(
+	r: T,
+	baseUrlConfig?: BaseUrlConfig
+): any {
+	if (baseUrlConfig?.inSeparateBranch) {
+		return {
+			...(_buildRoutes(r as YOLO, '', '', true) as YOLO),
+			withBaseUrl: _buildRoutes(r as YOLO, '', baseUrlConfig?.baseUrl, true),
+		};
+	}
+	return _buildRoutes(r as YOLO, '', baseUrlConfig?.baseUrl, true);
+}
+
 export function _buildRoutes<const T extends RouteMap | PathLiteral>(
 	r: T extends PathLiteral ? Validate<ValidLiteral<T>, T> : ValidRouteMap<T>,
 	prefix = '',

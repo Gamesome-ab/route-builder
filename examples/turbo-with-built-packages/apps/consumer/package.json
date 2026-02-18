@@ -8,6 +8,7 @@
     "check-types": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@repo/declaration-routes": "workspace:*",
     "@repo/routes": "workspace:*"
   },
   "devDependencies": {

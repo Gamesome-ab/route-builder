@@ -139,3 +139,43 @@ export type ValidRouteMap<T, First extends true | false = true> = {
 				? ValidRouteMap<T[K], false>
 				: T[K];
 };
+
+/**
+ * Helper type for inferring the resolved routes type from a route configuration.
+ * Use this when you need explicit type annotations for declaration emit compatibility
+ * (e.g., with `isolatedDeclarations: true` or when exporting routes from a package).
+ *
+ * @example
+ * ```typescript
+ * import { buildRoutes, type InferRoutes } from '@gamesome/route-builder';
+ *
+ * const routeConfig = {
+ *   $: '/',
+ *   users: {
+ *     $: '/users',
+ *     id: (userId: string) => `/${userId}`,
+ *   },
+ * } as const;
+ *
+ * export const routes: InferRoutes<typeof routeConfig> = buildRoutes(routeConfig);
+ * ```
+ */
+export type InferRoutes<T extends RouteMap> = ResolvedRoutes<T>;
+
+/**
+ * Expands a type alias into a plain mapped object shape.
+ * Useful for improving editor hover readability.
+ */
+export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+
+/**
+ * Recursively expands object and function return types.
+ * Useful when a type alias is otherwise displayed as a collapsed name in hovers.
+ */
+export type ExpandDeep<T> = T extends (...args: infer A) => infer R
+	? (...args: A) => ExpandDeep<R>
+	: T extends readonly (infer U)[]
+		? ExpandDeep<U>[]
+		: T extends object
+			? Expand<{ [K in keyof T]: ExpandDeep<T[K]> }>
+			: T;

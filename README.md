@@ -101,6 +101,50 @@ npm install @gamesome/route-builder
 yarn add @gamesome/route-builder
 ```
 
+## Advanced: `isolatedDeclarations` / package exports
+
+Most users should use `buildRoutes` directly and skip this section.
+
+If you publish routes from a package and compile with declaration emit (`declaration: true`) together with `isolatedDeclarations: true`, TypeScript can require explicit export annotations that are awkward with deeply inferred route trees.
+
+Important distinction:
+
+- `declaration: true` alone: usually fine with regular `buildRoutes` and no generator.
+- `declaration: true` + `isolatedDeclarations: true` on exported route objects: this is the problematic case the generator is meant to solve.
+
+A working declaration-only example (no generator) exists in `examples/turbo-with-built-packages/packages/declaration-routes`.
+
+For that case, this package includes a generator workflow:
+
+1. Build runtime routes with `buildRoutesWithGenerator`
+2. Generate a declaration file from that export using `route-builder-generate`
+3. Type the export with the generated type
+
+Example:
+
+```typescript
+import { buildRoutesWithGenerator } from '@gamesome/route-builder';
+import type { AppRoutes } from './routes.generated';
+
+export const appRoutes: AppRoutes = buildRoutesWithGenerator({
+  $: '/',
+  users: {
+    $: '/users',
+    id: (userId: string) => `/${userId}`,
+  },
+});
+```
+
+And generate the type file:
+
+```bash
+route-builder-generate src/index.ts --out src/routes.generated.ts --export appRoutes --type AppRoutes
+```
+
+Generating a `.ts` file is recommended for package builds, since `tsc` will then emit `dist/routes.generated.d.ts` automatically.
+
+Use this only when you need declaration-emit compatibility for exported route objects. If you are building an app (not a reusable package), `buildRoutes` alone is usually the better DX.
+
 # Setup, contributing and releasing
 
 ## Setup
