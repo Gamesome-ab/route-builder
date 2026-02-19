@@ -13,6 +13,8 @@ export default [
 						'{projectRoot}/esbuild.config.{js,ts,mjs,mts}',
 						'{projectRoot}/vite.config.{js,ts,mjs,mts}',
 						'{projectRoot}/vitest.config.{js,ts,mjs,mts}',
+						'{projectRoot}/**/*.test.{js,ts,mjs,mts}',
+						'{projectRoot}/**/*.spec.{js,ts,mjs,mts}',
 					],
 				},
 			],

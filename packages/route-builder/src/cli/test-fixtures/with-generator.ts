@@ -1,8 +1,8 @@
-import { buildRoutesWithGenerator } from '@gamesome/route-builder';
+import { buildRoutesWithGenerator } from '../../lib/build-routes';
 
 export const appRoutes = buildRoutesWithGenerator({
 	$: '/',
 	users: {
 		$: '/users',
 	},
-} as const);
+});

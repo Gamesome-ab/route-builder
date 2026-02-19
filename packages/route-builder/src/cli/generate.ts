@@ -20,11 +20,21 @@ export function parseArgs(args: string[]): GenerateOptions {
 
 	for (let i = 0; i < args.length; i++) {
 		const arg = args[i];
+		const nextArg = args[i + 1];
 		if (arg === '--out' || arg === '-o') {
+			if (!nextArg || nextArg.startsWith('-')) {
+				throw new Error(`Missing value for ${arg}`);
+			}
 			options.outputFile = args[++i];
 		} else if (arg === '--export' || arg === '-e') {
+			if (!nextArg || nextArg.startsWith('-')) {
+				throw new Error(`Missing value for ${arg}`);
+			}
 			options.exportName = args[++i];
 		} else if (arg === '--type' || arg === '-t') {
+			if (!nextArg || nextArg.startsWith('-')) {
+				throw new Error(`Missing value for ${arg}`);
+			}
 			options.typeName = args[++i];
 		} else if (!arg.startsWith('-')) {
 			options.inputFile = arg;
@@ -116,7 +126,7 @@ export function generate(options: GenerateOptions): string {
 	const inputDir = path.dirname(absoluteInput);
 
 	// Try to find tsconfig.json
-	let configPath = ts.findConfigFile(
+	const configPath = ts.findConfigFile(
 		inputDir,
 		ts.sys.fileExists,
 		'tsconfig.json'
@@ -316,8 +326,8 @@ Options:
   --help, -h           Show this help message
 
 Example:
-  route-builder-generate src/routes.ts --out src/routes.generated.d.ts
-  route-builder-generate src/routes.ts -o src/routes.d.ts -e myRoutes -t MyRoutes
+  route-builder-generate src/routes.ts --out src/routes.generated.ts
+  route-builder-generate src/routes.ts -o src/routes.generated.ts -e myRoutes -t MyRoutes
 `);
 		process.exit(0);
 	}

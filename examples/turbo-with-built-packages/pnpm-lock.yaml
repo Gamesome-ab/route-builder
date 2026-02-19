@@ -17,12 +17,25 @@ importers:
 
   apps/consumer:
     dependencies:
+      '@repo/declaration-node-next-routes':
+        specifier: workspace:*
+        version: link:../../packages/declaration-node-next-routes
       '@repo/declaration-routes':
         specifier: workspace:*
         version: link:../../packages/declaration-routes
-      '@repo/routes':
+      '@repo/isolated-declarations-routes':
         specifier: workspace:*
-        version: link:../../packages/routes
+        version: link:../../packages/isolated-declarations-routes
+    devDependencies:
+      typescript:
+        specifier: 5.9.2
+        version: 5.9.2
+
+  packages/declaration-node-next-routes:
+    dependencies:
+      '@gamesome/route-builder':
+        specifier: file:../../../../packages/route-builder
+        version: file:../../packages/route-builder
     devDependencies:
       typescript:
         specifier: 5.9.2
@@ -38,7 +51,7 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
-  packages/routes:
+  packages/isolated-declarations-routes:
     dependencies:
       '@gamesome/route-builder':
         specifier: file:../../../../packages/route-builder

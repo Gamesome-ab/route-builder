@@ -1,12 +1,15 @@
 # turbo-with-built-packages
 
-This example is a minimal Turborepo that consumes a built `@gamesome/route-builder` package.
+A minimal Turborepo workspace that proves most `tsconfig.json` setups emit fully typed route declarations out of the box, and shows the generator workflow for `isolatedDeclarations`.
 
-## Structure
+## Packages
 
-- `packages/routes`: Defines `appRoutes` using `buildRoutesWithGenerator` and generated types.
-- `packages/declaration-routes`: Defines `appRoutes` using plain `buildRoutes` with `declaration: true` and `isolatedDeclarations: false`.
-- `apps/consumer`: Imports route contracts from both `packages/routes` and `packages/declaration-routes`.
+| Package                                 | What it demonstrates                                                                          |
+| --------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `packages/declaration-routes`           | Plain `buildRoutes` with `declaration: true` (Bundler). No generator needed.                  |
+| `packages/declaration-node-next-routes` | Plain `buildRoutes` with `declaration: true` (NodeNext). No generator needed.                 |
+| `packages/isolated-declarations-routes` | `buildRoutesWithGenerator` + generated type file, required when `isolatedDeclarations: true`. |
+| `apps/consumer`                         | Imports all three packages and proves every route has concrete types.                         |
 
 ## Running
 

@@ -4,13 +4,13 @@
 import type { ExpandDeep } from '@gamesome/route-builder';
 
 type RawAppRoutes = {
-	$: "/";
+	$: '/';
 	dashboard: {
-		$: "/dashboard";
-		settings: "/dashboard/settings";
+		$: '/dashboard';
+		settings: '/dashboard/settings';
 	};
 	users: {
-		$: "/users";
+		$: '/users';
 		id: (userId: string) => `/users/${string}`;
 		profile: (userId: string) => {
 			$: `/users/${string}/profile`;
@@ -20,10 +20,10 @@ type RawAppRoutes = {
 		};
 	};
 	api: {
-		$: "/api";
+		$: '/api';
 		v1: {
-			$: "/api/v1";
-			health: "/api/v1/health";
+			$: '/api/v1';
+			health: '/api/v1/health';
 		};
 	};
 };

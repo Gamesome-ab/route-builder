@@ -44,8 +44,14 @@
 			}
 		}
 	},
-	"dependencies": {
-		"typescript": "^5.0.0"
+	"dependencies": {},
+	"peerDependencies": {
+		"typescript": ">=5.0.0"
+	},
+	"peerDependenciesMeta": {
+		"typescript": {
+			"optional": true
+		}
 	},
 	"repository": {
 		"type": "git",

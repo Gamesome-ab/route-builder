@@ -101,26 +101,17 @@ npm install @gamesome/route-builder
 yarn add @gamesome/route-builder
 ```
 
-## Advanced: `isolatedDeclarations` / package exports
+## Publishing routes from a package
 
-Most users should use `buildRoutes` directly and skip this section.
+Most `tsconfig.json` setups work out of the box. If you export routes from a built package with `declaration: true`, TypeScript will emit fully typed `.d.ts` files — no extra tooling required. Just make sure your `package.json` exposes the right entry points (an `exports` map with `types` and `import` conditions, and/or top-level `main` + `types`).
 
-If you publish routes from a package and compile with declaration emit (`declaration: true`) together with `isolatedDeclarations: true`, TypeScript can require explicit export annotations that are awkward with deeply inferred route trees.
+See working examples in [`examples/turbo-with-built-packages`](examples/turbo-with-built-packages).
 
-Important distinction:
+### Exception: `isolatedDeclarations`
 
-- `declaration: true` alone: usually fine with regular `buildRoutes` and no generator.
-- `declaration: true` + `isolatedDeclarations: true` on exported route objects: this is the problematic case the generator is meant to solve.
+When `isolatedDeclarations: true` is enabled, TypeScript requires every export to carry an explicit type annotation. Because `buildRoutes` returns a deeply inferred type, `tsc` will error on the bare export.
 
-A working declaration-only example (no generator) exists in `examples/turbo-with-built-packages/packages/declaration-routes`.
-
-For that case, this package includes a generator workflow:
-
-1. Build runtime routes with `buildRoutesWithGenerator`
-2. Generate a declaration file from that export using `route-builder-generate`
-3. Type the export with the generated type
-
-Example:
+For this case the library ships a generator CLI (`route-builder-generate`) and a companion function (`buildRoutesWithGenerator`):
 
 ```typescript
 import { buildRoutesWithGenerator } from '@gamesome/route-builder';
@@ -135,15 +126,21 @@ export const appRoutes: AppRoutes = buildRoutesWithGenerator({
 });
 ```
 
-And generate the type file:
+Then generate the type file as part of your build:
 
 ```bash
-route-builder-generate src/index.ts --out src/routes.generated.ts --export appRoutes --type AppRoutes
+route-builder-generate src/index.ts \
+  --out src/routes.generated.ts \
+  --export appRoutes \
+  --type AppRoutes
 ```
 
-Generating a `.ts` file is recommended for package builds, since `tsc` will then emit `dist/routes.generated.d.ts` automatically.
+- `src/index.ts` — the source file that contains the route definition.
+- `--out` — where to write the generated type file.
+- `--export` — the name of the exported variable to read the type from (must match your `export const …`).
+- `--type` — the name of the generated type alias (must match the `import type { … }` in your source).
 
-Use this only when you need declaration-emit compatibility for exported route objects. If you are building an app (not a reusable package), `buildRoutes` alone is usually the better DX.
+Use a `.ts` extension for `--out` (not `.d.ts`) so that `tsc` emits the corresponding `.d.ts` into `dist/` automatically.
 
 # Setup, contributing and releasing
 

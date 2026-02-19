@@ -8,8 +8,9 @@
     "check-types": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@repo/declaration-node-next-routes": "workspace:*",
     "@repo/declaration-routes": "workspace:*",
-    "@repo/routes": "workspace:*"
+    "@repo/isolated-declarations-routes": "workspace:*"
   },
   "devDependencies": {
     "typescript": "5.9.2"

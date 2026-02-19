@@ -1,5 +1,5 @@
 {
-  "name": "@repo/routes",
+  "name": "@repo/declaration-node-next-routes",
   "version": "0.0.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -11,8 +11,7 @@
     }
   },
   "scripts": {
-    "generate-types": "route-builder-generate src/index.ts --out src/routes.generated.ts --export appRoutes --type AppRoutes",
-    "build": "pnpm generate-types && tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json",
     "check-types": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

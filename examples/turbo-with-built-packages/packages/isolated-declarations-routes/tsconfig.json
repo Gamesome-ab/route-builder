@@ -10,5 +10,10 @@
 		"skipLibCheck": true,
 		"strict": true
 	},
-	"include": ["src/**/*"]
+	"include": ["src/**/*"],
+	"references": [
+		{
+			"path": "../../../../packages/route-builder"
+		}
+	]
 }

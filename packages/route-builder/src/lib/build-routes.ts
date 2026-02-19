@@ -8,7 +8,7 @@ import {
 	ValidLiteral,
 	ValidRouteMap,
 	YOLO,
-} from './types';
+} from './types.js';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type ExtendsOrEmpty<T, U, Y> = T extends U ? Y : {};
@@ -137,10 +137,10 @@ export function buildRoutes<const T extends RouteMap>(
  * } as const);
  * ```
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function buildRoutesWithGenerator<T>(
 	r: T,
 	baseUrlConfig?: BaseUrlConfig
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): any {
 	if (baseUrlConfig?.inSeparateBranch) {
 		return {
