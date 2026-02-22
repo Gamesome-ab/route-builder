@@ -171,19 +171,61 @@ Feel free to open issues or submit pull requests! We welcome contributions of al
 
 ## Releasing
 
-To release a new version of the package, run the following command in the root folder:
+`main` is a protected branch, so releases are done via a release branch that gets squash-merged back. Each step is run separately to keep full control over what happens.
+
+### 1. Create a release branch
 
 ```bash
-nx release --skip-publish
-nx release publish --otp=<your-npm-2fa-code>
+git checkout -b release/next main
 ```
 
-The first command will bump the version, generate changelogs and create a git tag. The second command will publish the package to npm. Make sure to replace `<your-npm-2fa-code>` with your actual npm 2FA code if you have 2FA enabled on your npm account.
+### 2. Bump the version
 
-If you unsuccessfully run the first command, and it creates a git tag, you can delete the tag before pushing with:
+```bash
+pnpm nx release version --no-git-commit --no-git-tag --no-git-push
+```
+
+Or edit `packages/route-builder/package.json` manually.
+
+### 3. Generate the changelog
+
+```bash
+pnpm nx release changelog <version> --no-git-commit --no-git-tag --no-git-push
+```
+
+Replace `<version>` with the new version (e.g. `0.1.0`). Review the generated changelog — if the commit messages don't follow conventional commits, you may need to write it by hand.
+
+### 4. Commit, push, and open a PR
+
+```bash
+git add packages/route-builder/package.json packages/route-builder/CHANGELOG.md CHANGELOG.md
+git commit -m "chore(release): <version>"
+git push -u origin release/next
+gh pr create --title "chore(release): <version>" --body "Bump @gamesome/route-builder to <version>"
+```
+
+### 5. Squash-merge the PR
+
+Merge via GitHub (squash merge). This lands the version bump and changelog on `main`.
+
+### 6. Tag and publish
+
+After the merge, tag the squashed commit on `main` and publish:
+
+```bash
+git checkout main && git pull
+git tag v<version>
+git push --tags
+pnpm nx release publish --otp=<your-npm-2fa-code>
+```
+
+Tag name should be something like `v0.0.1`
+
+### Cleaning up a failed release
+
+If you need to delete a tag that was created prematurely:
 
 ```bash
 git tag --delete <tag-name>
+git push --delete origin <tag-name>
 ```
-
-Tag name will be something like `v0.0.1`
