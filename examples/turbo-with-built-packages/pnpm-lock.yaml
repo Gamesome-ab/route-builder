@@ -35,7 +35,7 @@ importers:
     dependencies:
       '@gamesome/route-builder':
         specifier: file:../../../../packages/route-builder
-        version: file:../../packages/route-builder
+        version: file:../../packages/route-builder(typescript@5.9.2)
     devDependencies:
       typescript:
         specifier: 5.9.2
@@ -45,7 +45,7 @@ importers:
     dependencies:
       '@gamesome/route-builder':
         specifier: file:../../../../packages/route-builder
-        version: file:../../packages/route-builder
+        version: file:../../packages/route-builder(typescript@5.9.2)
     devDependencies:
       typescript:
         specifier: 5.9.2
@@ -55,7 +55,7 @@ importers:
     dependencies:
       '@gamesome/route-builder':
         specifier: file:../../../../packages/route-builder
-        version: file:../../packages/route-builder
+        version: file:../../packages/route-builder(typescript@5.9.2)
     devDependencies:
       typescript:
         specifier: 5.9.2
@@ -66,6 +66,11 @@ packages:
   '@gamesome/route-builder@file:../../packages/route-builder':
     resolution: {directory: ../../packages/route-builder, type: directory}
     hasBin: true
+    peerDependencies:
+      typescript: '>=5.0.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   turbo-darwin-64@2.7.6:
     resolution: {integrity: sha512-bYu0qnWju2Ha3EbIkPCk1SMLT3sltKh1P/Jy5FER6BmH++H5z+T5MHh3W1Xoers9rk4N1VdKvog9FO1pxQyjhw==}
@@ -108,8 +113,8 @@ packages:
 
 snapshots:
 
-  '@gamesome/route-builder@file:../../packages/route-builder':
-    dependencies:
+  '@gamesome/route-builder@file:../../packages/route-builder(typescript@5.9.2)':
+    optionalDependencies:
       typescript: 5.9.2
 
   turbo-darwin-64@2.7.6:

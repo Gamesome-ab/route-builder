@@ -137,8 +137,8 @@ export function buildRoutes<const T extends RouteMap>(
  * } as const);
  * ```
  */
-export function buildRoutesWithGenerator<T>(
-	r: T,
+export function buildRoutesWithGenerator<const T extends RouteMap>(
+	r: ValidRouteMap<T>,
 	baseUrlConfig?: BaseUrlConfig
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): any {
