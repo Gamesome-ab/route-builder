@@ -1,4 +1,4 @@
-import { buildRoutesWithGenerator, buildRoutes } from '@gamesome/route-builder';
+import { buildRoutesWithGenerator } from '@gamesome/route-builder/generator';
 import type { AppRoutes } from './routes.generated';
 
 export const appRoutes: AppRoutes = buildRoutesWithGenerator({

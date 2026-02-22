@@ -79,7 +79,7 @@ describe('generate', () => {
 		});
 
 		expect(output).toContain(
-			"import type { ExpandDeep } from '@gamesome/route-builder';"
+			"import type { ExpandDeep } from '@gamesome/route-builder/generator';"
 		);
 		expect(output).toContain('type RawAppRoutes = {');
 		expect(output).toContain('dashboard: {');

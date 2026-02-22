@@ -119,13 +119,13 @@ export function buildRoutes<const T extends RouteMap>(
 }
 
 /**
- * Build routes without strict type validation on the input.
+ * Build routes without return type.
  * Use this with the `route-builder-generate` CLI tool which generates
  * explicit type definitions for isolatedDeclarations compatibility.
  *
  * @example
  * ```typescript
- * import { buildRoutesWithGenerator } from '@gamesome/route-builder';
+ * import { buildRoutesWithGenerator } from '@gamesome/route-builder/generator';
  * import type { AppRoutes } from './routes.generated';
  *
  * export const appRoutes: AppRoutes = buildRoutesWithGenerator({
@@ -134,14 +134,13 @@ export function buildRoutes<const T extends RouteMap>(
  *     $: '/users',
  *     id: (userId: string) => `/${userId}`,
  *   },
- * } as const);
+ * });
  * ```
  */
 export function buildRoutesWithGenerator<const T extends RouteMap>(
 	r: ValidRouteMap<T>,
 	baseUrlConfig?: BaseUrlConfig
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-): any {
+): YOLO {
 	if (baseUrlConfig?.inSeparateBranch) {
 		return {
 			...(_buildRoutes(r as YOLO, '', '', true) as YOLO),

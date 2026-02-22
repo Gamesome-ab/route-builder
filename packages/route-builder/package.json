@@ -16,6 +16,12 @@
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js",
 			"default": "./dist/index.js"
+		},
+		"./generator": {
+			"root": "./src/generator.ts",
+			"types": "./dist/generator.d.ts",
+			"import": "./dist/generator.js",
+			"default": "./dist/generator.js"
 		}
 	},
 	"files": [
@@ -33,6 +39,7 @@
 					"outputPath": "packages/route-builder/dist",
 					"main": "packages/route-builder/src/index.ts",
 					"additionalEntryPoints": [
+						"packages/route-builder/src/generator.ts",
 						"packages/route-builder/src/cli/generate.ts"
 					],
 					"tsConfig": "packages/route-builder/tsconfig.lib.json",

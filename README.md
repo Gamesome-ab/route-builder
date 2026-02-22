@@ -109,12 +109,21 @@ See working examples in [`examples/turbo-with-built-packages`](examples/turbo-wi
 
 ### Exception: `isolatedDeclarations`
 
-When `isolatedDeclarations: true` is enabled, TypeScript requires every export to carry an explicit type annotation. Because `buildRoutes` returns a deeply inferred type, `tsc` will error on the bare export.
+When `isolatedDeclarations: true` is enabled, TypeScript requires every export to carry an explicit type annotation that the declaration emitter can resolve **without running the type checker**. Because `buildRoutes` returns a deeply inferred type, `tsc` will error on the bare export.
+
+#### Why not just use `as const` or a helper function?
+
+You might think you can sidestep the generator by extracting the route config into a variable with `as const` and annotating the export with a type like `InferRoutes<typeof config>`. This runs into two problems:
+
+1. **`as const` doesn't narrow function return types.** Arrow functions inside the config (dynamic route segments) still need individual explicit return type annotations, which quickly becomes verbose and error-prone for nested routes.
+2. **A helper function like `defineRoutes()` can't be resolved in isolation.** `isolatedDeclarations` requires that types are determinable without cross-file type inference. A function call's return type depends on the function's generic signature in another module, which the declaration emitter can't resolve.
+
+Both approaches break down for any non-trivial route map that includes dynamic segments. The generator exists specifically to solve this — it pre-computes the fully resolved type and writes it to a `.ts` file that the declaration emitter can consume as-is.
 
 For this case the library ships a generator CLI (`route-builder-generate`) and a companion function (`buildRoutesWithGenerator`):
 
 ```typescript
-import { buildRoutesWithGenerator } from '@gamesome/route-builder';
+import { buildRoutesWithGenerator } from '@gamesome/route-builder/generator';
 import type { AppRoutes } from './routes.generated';
 
 export const appRoutes: AppRoutes = buildRoutesWithGenerator({
