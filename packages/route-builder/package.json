@@ -1,7 +1,7 @@
 {
 	"name": "@gamesome/route-builder",
 	"description": "Typesafe, ergonomic javascript route-builder. No framework dependencies or magic string nonsense.",
-	"version": "0.0.2",
+	"version": "0.1.0",
 	"type": "module",
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
