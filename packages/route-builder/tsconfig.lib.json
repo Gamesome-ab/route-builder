@@ -7,7 +7,9 @@
 		"tsBuildInfoFile": "dist/tsconfig.lib.tsbuildinfo",
 		"emitDeclarationOnly": true,
 		"forceConsistentCasingInFileNames": true,
-		"types": ["node"]
+		"types": ["node"],
+		"module": "node16",
+		"moduleResolution": "node16"
 	},
 	"include": ["src/**/*.ts"],
 	"references": [],
@@ -23,6 +25,7 @@
 		"src/**/*.test.js",
 		"src/**/*.spec.js",
 		"src/**/*.test.jsx",
-		"src/**/*.spec.jsx"
+		"src/**/*.spec.jsx",
+		"src/cli/test-fixtures/**"
 	]
 }

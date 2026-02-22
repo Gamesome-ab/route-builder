@@ -100,3 +100,51 @@ npm install @gamesome/route-builder
 # or
 yarn add @gamesome/route-builder
 ```
+
+## Publishing routes from a package
+
+Most `tsconfig.json` setups work out of the box. If you export routes from a built package with `declaration: true`, TypeScript will emit fully typed `.d.ts` files — no extra tooling required. Just make sure your `package.json` exposes the right entry points (an `exports` map with `types` and `import` conditions, and/or top-level `main` + `types`).
+
+### Exception: `isolatedDeclarations`
+
+When `isolatedDeclarations: true` is enabled, TypeScript requires every export to carry an explicit type annotation that the declaration emitter can resolve **without running the type checker**. Because `buildRoutes` returns a deeply inferred type, `tsc` will error on the bare export.
+
+#### Why not just use `as const` or a helper function?
+
+You might think you can sidestep the generator by extracting the route config into a variable with `as const` and annotating the export with a type like `InferRoutes<typeof config>`. This runs into two problems:
+
+1. **`as const` doesn't narrow function return types.** Arrow functions inside the config (dynamic route segments) still need individual explicit return type annotations, which quickly becomes verbose and error-prone for nested routes.
+2. **A helper function like `defineRoutes()` can't be resolved in isolation.** `isolatedDeclarations` requires that types are determinable without cross-file type inference. A function call's return type depends on the function's generic signature in another module, which the declaration emitter can't resolve.
+
+Both approaches break down for any non-trivial route map that includes dynamic segments. The generator exists specifically to solve this — it pre-computes the fully resolved type and writes it to a `.ts` file that the declaration emitter can consume as-is.
+
+For this case the library ships a generator CLI (`route-builder-generate`) and a companion function (`buildRoutesWithGenerator`):
+
+```typescript
+import { buildRoutesWithGenerator } from '@gamesome/route-builder/generator';
+import type { AppRoutes } from './routes.generated';
+
+export const appRoutes: AppRoutes = buildRoutesWithGenerator({
+  $: '/',
+  users: {
+    $: '/users',
+    id: (userId: string) => `/${userId}`,
+  },
+});
+```
+
+Then generate the type file as part of your build:
+
+```bash
+route-builder-generate src/index.ts \
+  --out src/routes.generated.ts \
+  --export appRoutes \
+  --type AppRoutes
+```
+
+- `src/index.ts` — the source file that contains the route definition.
+- `--out` — where to write the generated type file.
+- `--export` — the name of the exported variable to read the type from (must match your `export const …`).
+- `--type` — the name of the generated type alias (must match the `import type { … }` in your source).
+
+Use a `.ts` extension for `--out` (not `.d.ts`) so that `tsc` emits the corresponding `.d.ts` into `dist/` automatically.

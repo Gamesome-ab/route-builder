@@ -8,7 +8,7 @@ import {
 	ValidLiteral,
 	ValidRouteMap,
 	YOLO,
-} from './types';
+} from './types.js';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type ExtendsOrEmpty<T, U, Y> = T extends U ? Y : {};
@@ -112,6 +112,38 @@ export function buildRoutes<const T extends RouteMap>(
 	if (baseUrlConfig?.inSeparateBranch) {
 		return {
 			...(_buildRoutes(r as YOLO, '', '', true) as ResolvedRoutes<T>),
+			withBaseUrl: _buildRoutes(r as YOLO, '', baseUrlConfig?.baseUrl, true),
+		};
+	}
+	return _buildRoutes(r as YOLO, '', baseUrlConfig?.baseUrl, true);
+}
+
+/**
+ * Build routes without return type.
+ * Use this with the `route-builder-generate` CLI tool which generates
+ * explicit type definitions for isolatedDeclarations compatibility.
+ *
+ * @example
+ * ```typescript
+ * import { buildRoutesWithGenerator } from '@gamesome/route-builder/generator';
+ * import type { AppRoutes } from './routes.generated';
+ *
+ * export const appRoutes: AppRoutes = buildRoutesWithGenerator({
+ *   $: '/',
+ *   users: {
+ *     $: '/users',
+ *     id: (userId: string) => `/${userId}`,
+ *   },
+ * });
+ * ```
+ */
+export function buildRoutesWithGenerator<const T extends RouteMap>(
+	r: ValidRouteMap<T>,
+	baseUrlConfig?: BaseUrlConfig
+): YOLO {
+	if (baseUrlConfig?.inSeparateBranch) {
+		return {
+			...(_buildRoutes(r as YOLO, '', '', true) as YOLO),
 			withBaseUrl: _buildRoutes(r as YOLO, '', baseUrlConfig?.baseUrl, true),
 		};
 	}

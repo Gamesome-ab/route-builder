@@ -1,0 +1,24 @@
+{
+  "name": "@repo/isolated-declarations-routes",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "generate-types": "route-builder-generate src/index.ts --out src/routes.generated.ts --export appRoutes --type AppRoutes",
+    "build": "pnpm generate-types && tsc -p tsconfig.json",
+    "check-types": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@gamesome/route-builder": "file:../../../../packages/route-builder"
+  },
+  "devDependencies": {
+    "typescript": "5.9.2"
+  }
+}
